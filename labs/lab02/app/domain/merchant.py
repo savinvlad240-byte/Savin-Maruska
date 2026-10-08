@@ -31,20 +31,19 @@ class Merchant:
     def status(self):
         return self._status
 
-    def suspend(self):
-        if self._status != "ACTIVE":
+    def _transition_to(self, allowed_from, new_status):
+        if self._status not in allowed_from:
             raise DomainError("INVALID_STATE")
-        self._status = "SUSPENDED"
+        self._status = new_status
+
+    def suspend(self):
+        self._transition_to(("ACTIVE",), "SUSPENDED")
 
     def activate(self):
-        if self._status != "SUSPENDED":
-            raise DomainError("INVALID_STATE")
-        self._status = "ACTIVE"
+        self._transition_to(("SUSPENDED",), "ACTIVE")
 
     def close(self):
-        if self._status not in ("ACTIVE", "SUSPENDED"):
-            raise DomainError("INVALID_STATE")
-        self._status = "CLOSED"
+        self._transition_to(("ACTIVE", "SUSPENDED"), "CLOSED")
 
     def availability(self):
         if self._status == "ACTIVE":
