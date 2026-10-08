@@ -1,0 +1,58 @@
+from app.support.types import CheckResult, Repository
+from app.support.types import name as valid_name, country as valid_country
+from app.support.errors import DomainError
+
+
+class Merchant:
+    def __init__(self, merchant_id, name, category, country):
+        self._merchant_id = merchant_id
+        self._name = valid_name(name)
+        self._category = category
+        self._country = valid_country(country)
+        self._status = "ACTIVE"
+
+    @property
+    def merchant_id(self):
+        return self._merchant_id
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def category(self):
+        return self._category
+
+    @property
+    def country(self):
+        return self._country
+
+    @property
+    def status(self):
+        return self._status
+
+    def suspend(self):
+        if self._status != "ACTIVE":
+            raise DomainError("INVALID_STATE")
+        self._status = "SUSPENDED"
+
+    def activate(self):
+        if self._status != "SUSPENDED":
+            raise DomainError("INVALID_STATE")
+        self._status = "ACTIVE"
+
+    def close(self):
+        if self._status not in ("ACTIVE", "SUSPENDED"):
+            raise DomainError("INVALID_STATE")
+        self._status = "CLOSED"
+
+    def availability(self):
+        if self._status == "ACTIVE":
+            return CheckResult(True)
+        return CheckResult(False, "MERCHANT_" + self._status)
+
+    def rename(self, new_name):
+        self._name = valid_name(new_name)
+
+    def describe(self):
+        return f"{self.merchant_id}:{self.name}:{self.category}:{self.status}"
