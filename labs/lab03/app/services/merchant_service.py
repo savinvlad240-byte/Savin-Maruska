@@ -8,7 +8,6 @@ from app.domain.acceptance import RestrictedCategoryRule, AcceptedChannelRule
 class MerchantService:
     def __init__(self, repository, rules=()):
         self._repository = repository
-        # Если правила не переданы — создаем стандартные
         self._rules = rules if rules else [
             RestrictedCategoryRule({"GAMBLING"}),
             AcceptedChannelRule({"POS", "ONLINE"})
@@ -55,9 +54,6 @@ def invoke(service, method, *args, **kwargs):
 def view(entity):
     return {'merchant_id': entity.merchant_id, 'name': entity.name, 'category': entity.category,
             'country': entity.country, 'status': entity.status}
-
-
-from app.support.types import Repository
 
 
 def new_service(repository=None):
