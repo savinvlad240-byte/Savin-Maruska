@@ -2,7 +2,7 @@ from app.support.types import CheckResult, checked, identifier, choice, boolean,
 from app.support.types import name as valid_name, country as valid_country
 from app.support.errors import DomainError
 from app.domain.merchant import Merchant
-from app.domain.acceptance import RestrictedCategoryRule, AcceptedChannelRule, RestrictedCountryRule
+from app.domain.acceptance import RestrictedCategoryRule, AcceptedChannelRule
 
 
 class MerchantService:
@@ -10,8 +10,7 @@ class MerchantService:
         self._repository = repository
         self._rules = rules if rules else [
             RestrictedCategoryRule({"GAMBLING"}),
-            AcceptedChannelRule({"POS", "ONLINE"}),
-            RestrictedCountryRule({"RU", "KP"})
+            AcceptedChannelRule({"POS", "ONLINE"})
         ]
 
     def register(self, entity):
@@ -55,9 +54,6 @@ def invoke(service, method, *args, **kwargs):
 def view(entity):
     return {'merchant_id': entity.merchant_id, 'name': entity.name, 'category': entity.category,
             'country': entity.country, 'status': entity.status}
-
-
-from app.support.types import Repository
 
 
 def new_service(repository=None):
