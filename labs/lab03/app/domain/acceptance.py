@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from app.support.types import CheckResult
 from app.support.types import choice
-
+from app.support.types import country as valid_country
 
 class MerchantAcceptanceRule(ABC):
     @abstractmethod
@@ -32,3 +32,14 @@ class AcceptedChannelRule(MerchantAcceptanceRule):
         if context.channel not in self._values:
             return CheckResult(False, self._code)
         return CheckResult(True)
+
+    class RestrictedCountryRule(MerchantAcceptanceRule):
+        def __init__(self, values):
+            self._values = frozenset(values)
+            for value in self._values:
+                valid_country(value)
+
+        def check(self, entity, context):
+            if entity.country in self._values:
+                return CheckResult(False, "MERCHANT_COUNTRY_DENIED")
+            return CheckResult(True)

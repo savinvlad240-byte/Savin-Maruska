@@ -2,16 +2,16 @@ from app.support.types import CheckResult, checked, identifier, choice, boolean,
 from app.support.types import name as valid_name, country as valid_country
 from app.support.errors import DomainError
 from app.domain.merchant import Merchant
-from app.domain.acceptance import RestrictedCategoryRule, AcceptedChannelRule
+from app.domain.acceptance import RestrictedCategoryRule, AcceptedChannelRule, RestrictedCountryRule
 
 
 class MerchantService:
     def __init__(self, repository, rules=()):
         self._repository = repository
-        # Если правила не переданы — создаем стандартные
         self._rules = rules if rules else [
             RestrictedCategoryRule({"GAMBLING"}),
-            AcceptedChannelRule({"POS", "ONLINE"})
+            AcceptedChannelRule({"POS", "ONLINE"}),
+            RestrictedCountryRule({"RU", "KP"})
         ]
 
     def register(self, entity):
